@@ -126,11 +126,11 @@ class FakerShell extends Shell
         }
 
         $type = $this->Table->getSchema()->getColumn($attribute);
-        if (!empty ($type['autoIncrement']) || in_array($attribute, ['created', 'modified'])) {
+        if (!empty($type['autoIncrement']) || in_array($attribute, ['created', 'modified'])) {
             return false;
         }
         
-        return isset ($this->Factory->$attribute) ? $this->Factory->$attribute : $this->Factory->{$type['type']};
+        return isset($this->Factory->$attribute) ? $this->Factory->$attribute : $this->Factory->{$type['type']};
     }
 
 }
