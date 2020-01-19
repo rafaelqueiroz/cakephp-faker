@@ -1,0 +1,24 @@
+{
+    "name": "rafaelqueiroz/cakephp-faker",
+    "description": "Faker plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "license": "MIT",
+    "require": {
+        "cakephp/cakephp": "^3.5",
+        "fzaninotto/faker": "^1.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7.14|^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Faker\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Faker\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    }
+}
