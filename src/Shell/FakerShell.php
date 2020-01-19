@@ -80,7 +80,15 @@ class FakerShell extends Shell
     
         try {
             while ($this->params['count']) {
-                $output[] = $this->faker($model)->toArray();
+                $entity = $this->faker($model);
+
+                $columns = []; 
+                foreach ($this->Table->getSchema()->columns() as $attribute) {
+                    $columns[] = (string) $entity->$attribute;
+                }
+                
+                $output[] = $columns;
+                
                 $this->params['count']--;
             }
 
