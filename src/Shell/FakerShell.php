@@ -28,6 +28,13 @@ class FakerShell extends Shell
     protected $attributes = [];
 
     /**
+     * @vary array
+     */
+    protected $mapProprierties = [
+        'string' => 'text',
+    ];
+
+    /**
      * initialize callback
      *
      * @return void
@@ -65,13 +72,19 @@ class FakerShell extends Shell
         if (!$model) {
             return $this->out($this->OptionParser->help());
         }
-        
+
+        $this->attributes = $this->parseArgs($args);
+        $this->Table = $this->loadModel($model);
+
+        $output = [$this->Table->getSchema()->columns()];
+    
         try {
-            $this->attributes = $this->parseArgs($args);
             while ($this->params['count']) {
-                $this->faker($model);
+                $output[] = $this->faker($model)->toArray();
                 $this->params['count']--;
             }
+
+            $this->getIo()->helper('Table')->output($output);
         } catch (Exception $e)
         {
             $this->getIo()->error($e->getMessage());
@@ -83,10 +96,8 @@ class FakerShell extends Shell
      */
     protected function faker($model)
     {
-        $this->Table = $this->loadModel($model);
-
         $data = [];
-        foreach ( $this->Table->getSchema()->columns() as $column) {
+        foreach ($this->Table->getSchema()->columns() as $column) {
             $attribute = $this->parseAttribute($column);
             if (!$attribute) {
                 continue;
@@ -95,7 +106,10 @@ class FakerShell extends Shell
             $data[$column] = $attribute;
         }
 
-        $this->Table->save($this->Table->newEntity($data));
+        $entity = $this->Table->newEntity($data);
+        $this->Table->save($entity);
+
+        return $entity;
     }
 
     /**
@@ -128,6 +142,9 @@ class FakerShell extends Shell
         $type = $this->Table->getSchema()->getColumn($attribute);
         if (!empty($type['autoIncrement']) || in_array($attribute, ['created', 'modified'])) {
             return false;
+        }
+        if (array_key_exists($type['type'], $this->mapProprierties)) {
+            return $this->Factory->{$this->mapProprierties[$type['type']]};
         }
         
         return isset($this->Factory->$attribute) ? $this->Factory->$attribute : $this->Factory->{$type['type']};
